@@ -1,0 +1,165 @@
+{
+	"info": {
+		"_postman_id": "c6a02e62-4ced-447f-b9ad-2e31b1c352d3",
+		"name": "LoginViaJWT",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29473181"
+	},
+	"item": [
+		{
+			"name": "SignUp",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"gkamble@gmail.com\",\r\n    \"username\": \"gkamble\",\r\n    \"password\" : \"gk\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SecurityProjectBaseURL}}/auth/register",
+					"host": [
+						"{{SecurityProjectBaseURL}}"
+					],
+					"path": [
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"gkamble@gmail.com\",\r\n    \"verificationCode\" : \"998341\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SecurityProjectBaseURL}}/auth/verify",
+					"host": [
+						"{{SecurityProjectBaseURL}}"
+					],
+					"path": [
+						"auth",
+						"verify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Resend",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"gkamble@gmail.com\"\r\n    \r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SecurityProjectBaseURL}}/auth/resend",
+					"host": [
+						"{{SecurityProjectBaseURL}}"
+					],
+					"path": [
+						"auth",
+						"resend"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"gkamble@gmail.com\",\r\n    \"password\" : \"gk\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SecurityProjectBaseURL}}/auth/login",
+					"host": [
+						"{{SecurityProjectBaseURL}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJna2FtYmxlIiwiaWF0IjoxNzU0MjI0MjU1LCJleHAiOjE3NTQyMjc4NTV9._3NZVfM4nVo03tsGY6EOh0xSzA5ZeJZ385hHthKF7ZI",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SecurityProjectBaseURL}}/users/me",
+					"host": [
+						"{{SecurityProjectBaseURL}}"
+					],
+					"path": [
+						"users",
+						"me"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "SecurityProjectBaseURL",
+			"value": "http://localhost:3000",
+			"type": "default"
+		}
+	]
+}
