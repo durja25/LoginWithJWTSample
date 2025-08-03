@@ -12,6 +12,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
+
 import java.util.List;
 
 @Configuration
@@ -36,7 +40,11 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 // Allow requests to the /auth/** endpoint
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/auth/**")
+                        .requestMatchers(
+                                       antMatcher("/auth/**"),
+                                       antMatcher("/v3/api-docs/**"),
+                                       antMatcher("/swagger-ui/**"),
+                                       antMatcher("/swagger-ui.html"))
                         .permitAll()
                         .anyRequest()
                         .authenticated()
