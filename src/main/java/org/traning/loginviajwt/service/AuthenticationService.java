@@ -52,11 +52,11 @@ public class AuthenticationService {
     private void sendVerificationEmail(User user) {
         String subject = "Please verify your email";
         String text = "To verify your email, please click the link below\n"
-                + "http://localhost:8080/api/v1/auth/verify?code=" + user.getVerificationCode();
+                + "http://localhost:3000/api/v1/auth/verify?code=" + user.getVerificationCode();
         try {
             emailService.sendEmail(user.getEmail(), subject, text);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to send verification email", e);
         }
     }
 
@@ -77,6 +77,7 @@ public class AuthenticationService {
         return user;
 
     }
+
 
     public void verifyUser(VerifyUserDto input) {
         Optional<User> user = userRepository.findByEmail(input.getEmail());

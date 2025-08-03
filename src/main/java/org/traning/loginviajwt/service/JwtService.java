@@ -90,9 +90,12 @@ public class JwtService {
      * @return the built JWT token
      */
     private String buildToken(HashMap<String, Object> claims, String username, long expirationTime) {
-        return Jwts.builder().setClaims(claims).setSubject(username).setIssuedAt(new Date(System.currentTimeMillis()))
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(username)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(getSecretKey(), SignatureAlgorithm.ES256).compact();
+                .signWith(getSecretKey(), SignatureAlgorithm.HS256).compact();
     }
 
     /**
@@ -133,6 +136,14 @@ public class JwtService {
      * @return the secret key
      */
     private Key getSecretKey() {
-        return Keys.hmacShaKeyFor(secretKey.getBytes());
+        // Ensure the key is at least 256 bits (32 bytes) for HS256
+        byte[] keyBytes = secretKey.getBytes();
+        if (keyBytes.length < 32) {
+            // Pad the key if it's too short
+            byte[] paddedKey = new byte[32];
+            System.arraycopy(keyBytes, 0, paddedKey, 0, keyBytes.length);
+            keyBytes = paddedKey;
+        }
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }
