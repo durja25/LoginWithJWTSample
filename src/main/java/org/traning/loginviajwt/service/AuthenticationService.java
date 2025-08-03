@@ -70,11 +70,10 @@ public class AuthenticationService {
         if (!user.isEnabled()) {
             throw new RuntimeException("Account is not Verified");
         }
-        if (LocalDateTime.now().isAfter(user.getVerificationStatus())) {
-            throw new RuntimeException("Verification code expired");
-        }
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(input.getEmail(), input.getPassword()));
+                new UsernamePasswordAuthenticationToken(
+                        input.getEmail(),
+                        input.getPassword()));
         return user;
 
     }
@@ -82,7 +81,7 @@ public class AuthenticationService {
     public void verifyUser(VerifyUserDto input) {
         Optional<User> user = userRepository.findByEmail(input.getEmail());
         if (user.isPresent()) {
-            if (user.get().getVerificationStatus().isAfter(LocalDateTime.now())) {
+            if (user.get().getVerificationStatus().isBefore(LocalDateTime.now())) {
 
                 throw new RuntimeException("verification code expired");
             } else {
