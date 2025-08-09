@@ -12,3 +12,11 @@ Java Development Kit (JDK) 8 or newer
 Maven or Gradle
 Supabase database (With Table format)
 Postman (for testing endpoints)
+
+## Technologies
+- Spring Boot 3.0
+- Spring Security
+- JSON Web Tokens (JWT)
+- BCrypt
+- Maven
+- postgres Supabase database
