@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.traning.loginviajwt.dto.LoginUserDto;
 import org.traning.loginviajwt.dto.RegisterUserDto;
 import org.traning.loginviajwt.dto.VerifyUserDto;
-import org.traning.loginviajwt.model.Role;
 import org.traning.loginviajwt.model.User;
 import org.traning.loginviajwt.repository.UserRepository;
 
