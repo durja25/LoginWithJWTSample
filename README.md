@@ -8,10 +8,10 @@
 ## Prerequisites
 Before running the application, ensure you have the following installed:
 
-Java Development Kit (JDK) 8 or newer
-Maven or Gradle
-Supabase database (With Table format)
-Postman (for testing endpoints)
+- Java Development Kit (JDK) 8 or newer
+- Maven
+- Supabase database (With Table format)
+- Postman (for testing endpoints)
 
 ## Technologies
 - Spring Boot 3.0
