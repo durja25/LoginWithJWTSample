@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
@@ -40,6 +41,9 @@ public class User implements UserDetails {
     @Column(name = "verification_expiration")
     private LocalDateTime verificationStatus;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     public User(String username, String email, String password) {
         this.email = email;
         this.username = username;
@@ -52,7 +56,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         //TODO: Used to get the roles of the user and roles are used to give the permission to the user
-        return List.of();
+        return role.getAuthorities();
     }
 
     @Override
@@ -85,7 +89,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
     @Override
     public String getPassword() {

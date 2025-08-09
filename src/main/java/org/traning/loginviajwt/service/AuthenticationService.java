@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.traning.loginviajwt.dto.LoginUserDto;
 import org.traning.loginviajwt.dto.RegisterUserDto;
 import org.traning.loginviajwt.dto.VerifyUserDto;
+import org.traning.loginviajwt.model.Role;
 import org.traning.loginviajwt.model.User;
 import org.traning.loginviajwt.repository.UserRepository;
 
@@ -45,6 +46,7 @@ public class AuthenticationService {
         user.setVerificationCode(generateVerificationCode());
         user.setVerificationStatus(LocalDateTime.now().plusMinutes(15));
         user.setEnabled(false);
+        user.setRole(registerUserDto.getRole());
         sendVerificationEmail(user);
         return userRepository.save(user);
     }
