@@ -1,4 +1,14 @@
 # Spring Security Project 
 
-- Login using JWT and Mail verification
-- Signup
+- Login using JWT token generation 
+- User Signup with Mail verification
+- User email verification flow (send verification code, verify user)
+- Fetch authenticated user details
+
+## Prerequisites
+Before running the application, ensure you have the following installed:
+
+Java Development Kit (JDK) 8 or newer
+Maven or Gradle
+Supabase database (With Table format)
+Postman (for testing endpoints)
