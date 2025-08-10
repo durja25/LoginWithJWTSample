@@ -8,6 +8,7 @@ This project demonstrates the implementation of Spring Security, including:
 - Fetch authenticated user details
 - Role-based access control (RBAC)
 - Password encryption using BCrypt
+- Logout functionality (destroy token)
 
 ## Prerequisites
 Before running the application, ensure you have the following installed:
@@ -21,6 +22,7 @@ Before running the application, ensure you have the following installed:
 - Spring Boot 3.0
 - Spring Security
 - JSON Web Tokens (JWT)
+- slf4j
 - BCrypt
 - Maven
 - postgres Supabase database

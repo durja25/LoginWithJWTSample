@@ -7,11 +7,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.traning.loginviajwt.service.LogoutService;
 
 import java.util.List;
 
@@ -28,12 +30,16 @@ public class SecurityConfiguration {
     private final AuthenticationProvider authenticationProvider;
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final LogoutService logoutService;
+
+
 
 
     public SecurityConfiguration(AuthenticationProvider authenticationProvider,
-            JwtAuthenticationFilter jwtAuthenticationFilter) {
+            JwtAuthenticationFilter jwtAuthenticationFilter, LogoutService logoutService) {
         this.authenticationProvider = authenticationProvider;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.logoutService = logoutService;
     }
 
     @Bean
@@ -51,7 +57,7 @@ public class SecurityConfiguration {
                                 antMatcher("/swagger-ui/**"),
                                 antMatcher("/swagger-ui.html"))
                         .permitAll()
-                        
+
                         // Secure user endpoints
                         .requestMatchers(antMatcher("/user/**")).authenticated()
 
@@ -86,7 +92,14 @@ public class SecurityConfiguration {
                 // Add the custom JWT authentication filter
                 .authenticationProvider(authenticationProvider)
                 // Add the custom JWT authentication filter
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout()
+                .logoutUrl("/auth/logout")
+                .addLogoutHandler(logoutService)
+                .logoutSuccessHandler(
+                        (httpServletRequest, httpServletResponse, authentication)
+                                -> SecurityContextHolder.clearContext());
+
 
         return http.build();
     }

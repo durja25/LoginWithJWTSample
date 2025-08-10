@@ -1,15 +1,19 @@
 package org.traning.loginviajwt.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -20,6 +24,8 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.traning.loginviajwt.service.JwtService;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -29,6 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     private final UserDetailsService userDetailsService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public JwtAuthenticationFilter(HandlerExceptionResolver handlerExceptionResolver,
             JwtService jwtService,
@@ -105,19 +112,48 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             SecurityContextHolder.getContext().getAuthentication() != null ? "SUCCESS" : "FAILED");
                     } else {
                         logger.warn("Token validation failed for user: {}", username);
+                        sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
+                                          "Invalid or expired authentication token");
+                        return;
                     }
+                } catch (UsernameNotFoundException e) {
+                    logger.error("User not found: {}", username);
+                    sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
+                                      "Invalid user credentials");
+                    return;
                 } catch (Exception e) {
                     logger.error("Error loading user details for user: {}", username, e);
+                    sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
+                                      "Token validation failed: " + e.getMessage());
+                    return;
                 }
             } else {
                 logger.warn("Username is empty or null");
+                sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED,
+                                  "Invalid authentication token: missing username");
+                return;
             }
 
             // Continue the filter chain
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             // Resolve any exceptions that occur during the filtering process
-            handlerExceptionResolver.resolveException(request, response, null, e);
+            logger.error("Exception details for user: {}", e);
+            sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                              e.getMessage());
         }
+    }
+
+    private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
+        response.setStatus(status);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("status", status);
+        errorResponse.put("error", HttpStatus.valueOf(status).getReasonPhrase());
+        errorResponse.put("message", message);
+        errorResponse.put("path", ""); // Can be set with request path if needed
+
+        objectMapper.writeValue(response.getWriter(), errorResponse);
     }
 }
