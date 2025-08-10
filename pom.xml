@@ -97,6 +97,12 @@
             <version>2.5.0</version>
         </dependency>
 
+<!--        Even spring-boot-starter-web has this dependency, Adding it again here-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-logging</artifactId>
+        </dependency>
+
 
     </dependencies>
 

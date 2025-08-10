@@ -41,6 +41,8 @@ public class SecurityConfiguration {
         http
                 // Disable CSRF
                 .csrf(AbstractHttpConfigurer::disable)
+                // Enable CORS with default configuration
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // Allow requests to the /auth/** endpoint
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
@@ -49,6 +51,9 @@ public class SecurityConfiguration {
                                 antMatcher("/swagger-ui/**"),
                                 antMatcher("/swagger-ui.html"))
                         .permitAll()
+                        
+                        // Secure user endpoints
+                        .requestMatchers(antMatcher("/user/**")).authenticated()
 
                         .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGEMENT.name())
 
@@ -94,6 +99,11 @@ public class SecurityConfiguration {
         cors.setAllowedOrigins(List.of("http://localhost:3000"));
         cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         cors.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        cors.setAllowCredentials(true);
+        cors.setMaxAge(3600L);
+
+        System.out.println("CORS Configuration: " + cors.toString());
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", cors);
         return source;

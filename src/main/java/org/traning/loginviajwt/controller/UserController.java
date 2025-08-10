@@ -1,5 +1,7 @@
 package org.traning.loginviajwt.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,8 +14,9 @@ import org.traning.loginviajwt.service.UserService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping({"/user", "/users"})
 public class UserController {
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
 
@@ -25,6 +28,7 @@ public class UserController {
     public ResponseEntity<User> authenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User me = (User) authentication.getPrincipal();
+//        return ResponseEntity.ok("User found");
         return ResponseEntity.ok(me);
     }
 

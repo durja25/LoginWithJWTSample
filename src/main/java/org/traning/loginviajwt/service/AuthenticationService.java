@@ -1,5 +1,6 @@
 package org.traning.loginviajwt.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -7,18 +8,28 @@ import org.springframework.stereotype.Service;
 import org.traning.loginviajwt.dto.LoginUserDto;
 import org.traning.loginviajwt.dto.RegisterUserDto;
 import org.traning.loginviajwt.dto.VerifyUserDto;
+import org.traning.loginviajwt.model.Token;
+import org.traning.loginviajwt.model.TokenType;
 import org.traning.loginviajwt.model.User;
+import org.traning.loginviajwt.repository.TokenRepository;
 import org.traning.loginviajwt.repository.UserRepository;
+import org.traning.loginviajwt.responses.LoginResponse;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+@Slf4j
 @Service
 public class AuthenticationService {
 
 
     private final UserRepository userRepository;
+
+    private final TokenRepository tokenRepository;
+
+    private final JwtService jwtService;
 
     private final EmailService emailService;
 
@@ -26,11 +37,13 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationService(UserRepository userRepository,
+    public AuthenticationService(UserRepository userRepository, TokenRepository tokenRepository, JwtService jwtService,
             EmailService emailService,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
+        this.tokenRepository = tokenRepository;
+        this.jwtService = jwtService;
         this.emailService = emailService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -117,6 +130,35 @@ public class AuthenticationService {
         } else {
             throw new RuntimeException("User not found");
         }
+    }
+
+    public LoginResponse loginUser(LoginUserDto loginUserDto) {
+        User user = authenticate(loginUserDto);
+        String generatedToken = jwtService.generateToken(user);
+        Token token = new Token();
+        token.setToken(generatedToken);
+        token.setTokenType(TokenType.BEARER);
+        token.setExpired(false);
+        token.setRevoked(false);
+        token.setUser(user);
+        // revoke previous tokens
+        revokeToken(user);
+        tokenRepository.save(token);
+        LoginResponse loginResponse = new LoginResponse(generatedToken, jwtService.getExpirationTime());
+
+        return loginResponse;
+    }
+
+    public void revokeToken(User user) {
+        List<Token> token = tokenRepository.findAllValidTokenByUser(user.getId());
+        if (token.isEmpty()) {
+            return;
+        }
+        token.forEach(t -> {
+            t.setExpired(true);
+            t.setRevoked(true);
+        });
+        tokenRepository.saveAll(token);
     }
 
 

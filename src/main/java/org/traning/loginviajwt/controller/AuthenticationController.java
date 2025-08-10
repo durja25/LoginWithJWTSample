@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import org.traning.loginviajwt.dto.LoginUserDto;
 import org.traning.loginviajwt.dto.RegisterUserDto;
 import org.traning.loginviajwt.dto.VerifyUserDto;
-import org.traning.loginviajwt.model.User;
 import org.traning.loginviajwt.responses.LoginResponse;
 import org.traning.loginviajwt.service.AuthenticationService;
 import org.traning.loginviajwt.service.JwtService;
@@ -29,10 +28,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginUserDto registerUserDto) {
-        User user = authenticationService.authenticate(registerUserDto);
-        String generatedToken = jwtService.generateToken(user);
-        LoginResponse loginResponse = new LoginResponse(generatedToken, jwtService.getExpirationTime());
+    public ResponseEntity<?> loginUser(@RequestBody LoginUserDto loginUserDto) {
+        LoginResponse loginResponse = authenticationService.loginUser(loginUserDto);
         return ResponseEntity.ok(loginResponse);
     }
 
@@ -40,9 +37,9 @@ public class AuthenticationController {
     public ResponseEntity<?> verifyUser(@RequestBody VerifyUserDto verifyUserDto) {
         try {
 
-        authenticationService.verifyUser(verifyUserDto);
-        return ResponseEntity.ok("User verified successfully");
-        }catch (Exception e){
+            authenticationService.verifyUser(verifyUserDto);
+            return ResponseEntity.ok("User verified successfully");
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 

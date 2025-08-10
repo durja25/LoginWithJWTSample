@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.traning.loginviajwt.repository.TokenRepository;
 
 import java.security.Key;
 import java.util.Date;
@@ -26,6 +27,12 @@ public class JwtService {
 
     @Value("${security.jwt.expiration-time}")
     private long expirationTime;
+
+    private final TokenRepository tokenRepository;
+
+    public JwtService(TokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
+    }
 
     /**
      * Extracts the username from the JWT token.
@@ -107,7 +114,12 @@ public class JwtService {
      */
     public boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+
+        // Check if the token is revoked or expired
+        Boolean isTokenValid = tokenRepository.findByToken(token)
+                .map(token1 -> !token1.isExpired() && !token1.isRevoked()).orElse(false);
+
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token) && isTokenValid);
     }
 
     /**
